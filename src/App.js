@@ -17,6 +17,7 @@ class App extends Component {
     storageBucket: 'manager-15ee0.appspot.com',
     messagingSenderId: '185921935406'
   };
+  console.ignoredYellowBox = ['Setting a timer'];
 
   firebase.initializeApp(config);
   }

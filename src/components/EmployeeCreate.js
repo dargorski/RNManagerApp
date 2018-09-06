@@ -1,10 +1,30 @@
 import React, { Component } from 'react';
-import { Picker, Text } from 'react-native';
+import { Picker, Text, Platform } from 'react-native';
 import { connect } from 'react-redux';
-import { employeeUpdate } from '../actions';
-import { Card, CardSection, Input, Button } from './common';
+import { employeeUpdate, employeeCreate } from '../actions';
+import { Card, CardSection, Input, Button, Spinner } from './common';
 
 class EmployeeCreate extends Component {
+  onButtonPress() {
+    const { name, phone, shift } = this.props;
+
+    this.props.employeeCreate({ name, phone, shift: shift || 'Monday' });
+  }
+
+  renderSpinner() {
+    if (this.props.loading) {
+      return (
+        <Spinner />
+      );
+    }
+
+ return (
+   <Button whenPressed={this.onButtonPress.bind(this)}>
+     Create
+   </Button>
+    );
+  }
+
   render() {
     return (
       <Card>
@@ -45,9 +65,7 @@ class EmployeeCreate extends Component {
         </CardSection>
 
         <CardSection>
-          <Button>
-            Create
-          </Button>
+          {this.renderSpinner()}
         </CardSection>
       </Card>
     );
@@ -56,8 +74,15 @@ class EmployeeCreate extends Component {
 
 const styles = {
   pickerCardSectionStyle: {
-    height: 55,
-    alignItems: 'center'
+    ...Platform.select({
+      ios: {
+        flexDirection: 'column'
+      },
+      android: {
+        height: 55,
+        alignItems: 'center'
+      }
+    })
   },
   pickerTextStyle: {
     flex: 1,
@@ -65,15 +90,22 @@ const styles = {
     paddingLeft: 20
   },
   pickerStyle: {
-    flex: 2,
-    margin: -8
+    ...Platform.select({
+      android: {
+        flex: 2,
+        margin: -8
+      }
+    })
   }
 };
 
 const mapStateToProps = (state) => {
-  const { name, phone, shift } = state.employeeForm;
+  const { name, phone, shift, loading } = state.employeeForm;
 
-  return { name, phone, shift };
+  return { name, phone, shift, loading };
 };
 
-export default connect(mapStateToProps, { employeeUpdate })(EmployeeCreate);
+export default connect(mapStateToProps, {
+   employeeUpdate,
+   employeeCreate
+  })(EmployeeCreate);
